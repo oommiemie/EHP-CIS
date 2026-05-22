@@ -228,6 +228,40 @@ const toneGlass: Record<Tone, string> = {
   rose: 'bg-gradient-to-br from-rose-400/85 to-pink-500/80',
 }
 
+/* KPI cards — liquid glass มีสีจาง ๆ บาง ๆ ไม่มีเส้นขอบ (faint colour wash) */
+const toneKpi: Record<Tone, { wash: string; glow: string; bloom: string }> = {
+  brand: {
+    wash: 'from-brand-400/[0.12] via-brand-400/[0.04] to-transparent',
+    glow: 'shadow-[0_12px_28px_-14px_rgba(28,38,92,0.26)] hover:shadow-[0_22px_44px_-18px_rgba(58,100,255,0.45)]',
+    bloom: 'bg-brand-400/45',
+  },
+  sky: {
+    wash: 'from-sky-400/[0.12] via-sky-400/[0.04] to-transparent',
+    glow: 'shadow-[0_12px_28px_-14px_rgba(28,38,92,0.26)] hover:shadow-[0_22px_44px_-18px_rgba(14,165,233,0.42)]',
+    bloom: 'bg-sky-400/45',
+  },
+  emerald: {
+    wash: 'from-emerald-400/[0.12] via-emerald-400/[0.04] to-transparent',
+    glow: 'shadow-[0_12px_28px_-14px_rgba(28,38,92,0.26)] hover:shadow-[0_22px_44px_-18px_rgba(16,185,129,0.42)]',
+    bloom: 'bg-emerald-400/45',
+  },
+  amber: {
+    wash: 'from-amber-400/[0.14] via-amber-400/[0.05] to-transparent',
+    glow: 'shadow-[0_12px_28px_-14px_rgba(28,38,92,0.26)] hover:shadow-[0_22px_44px_-18px_rgba(245,158,11,0.42)]',
+    bloom: 'bg-amber-400/50',
+  },
+  violet: {
+    wash: 'from-violet-400/[0.12] via-violet-400/[0.04] to-transparent',
+    glow: 'shadow-[0_12px_28px_-14px_rgba(28,38,92,0.26)] hover:shadow-[0_22px_44px_-18px_rgba(139,92,246,0.42)]',
+    bloom: 'bg-violet-400/45',
+  },
+  rose: {
+    wash: 'from-rose-400/[0.12] via-rose-400/[0.04] to-transparent',
+    glow: 'shadow-[0_12px_28px_-14px_rgba(28,38,92,0.26)] hover:shadow-[0_22px_44px_-18px_rgba(244,63,94,0.42)]',
+    bloom: 'bg-rose-400/45',
+  },
+}
+
 /* ── Service workflow — OPD patient journey stages ──────── */
 const workflow: {
   stage: string
@@ -677,17 +711,62 @@ function KpiCard({
   return (
     <button
       onClick={onClick}
-      className="group flex w-[212px] shrink-0 flex-col rounded-[24px] bg-white p-[18px] text-left shadow-[0_12px_28px_-12px_rgba(28,38,92,0.3)] ring-1 ring-ink-900/[0.05] transition-all duration-200 hover:-translate-y-1 hover:shadow-[0_20px_36px_-16px_rgba(28,38,92,0.4)] focus-ring xl:w-auto xl:flex-1 xl:min-w-0"
+      className={cn(
+        'liquid-glass group relative isolate flex w-[212px] shrink-0 flex-col overflow-hidden rounded-[24px] bg-white/[0.44] p-[18px] text-left transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:bg-white/[0.55] active:scale-[0.98] focus-ring xl:w-auto xl:flex-1 xl:min-w-0',
+        toneKpi[kpi.tone].glow
+      )}
     >
-      <div className="flex items-start justify-between gap-2">
-        <Icon className={cn('h-[22px] w-[22px]', toneText[kpi.tone])} />
-        <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 py-1 pl-1.5 pr-2 text-[11px] font-semibold text-emerald-700">
-          <TrendArrow className="h-3 w-3" />
+      {/* colour wash — liquid glass มีสีบาง ๆ */}
+      <span
+        aria-hidden
+        className={cn(
+          'pointer-events-none absolute inset-0 bg-gradient-to-br',
+          toneKpi[kpi.tone].wash
+        )}
+      />
+      {/* specular highlight — light catching the glass */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/70 via-white/[0.18] to-transparent"
+      />
+      {/* corner light bloom */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -left-10 -top-12 h-36 w-36 rounded-full bg-white/45 blur-2xl transition-transform duration-500 group-hover:scale-110"
+      />
+      {/* glossy diagonal streak */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-6 -top-16 h-32 w-16 rotate-[28deg] bg-gradient-to-b from-white/35 to-transparent blur-md"
+      />
+      {/* hover — coloured glow blooms in from the corner */}
+      <span
+        aria-hidden
+        className={cn(
+          'pointer-events-none absolute -bottom-12 -right-10 h-36 w-36 rounded-full blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100',
+          toneKpi[kpi.tone].bloom
+        )}
+      />
+      {/* hover — shine sweep travels across the glass */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 left-0 w-1/2 -translate-x-[160%] -skew-x-12 bg-gradient-to-r from-transparent via-white/55 to-transparent opacity-0 transition-all duration-[850ms] ease-out group-hover:translate-x-[280%] group-hover:opacity-100"
+      />
+
+      <div className="relative flex items-start justify-between gap-2">
+        <Icon
+          className={cn(
+            'h-[22px] w-[22px] transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-110',
+            toneText[kpi.tone]
+          )}
+        />
+        <span className="inline-flex items-center gap-0.5 rounded-full bg-emerald-500/15 py-1 pl-1.5 pr-2 text-[11px] font-semibold text-emerald-700 transition-colors duration-300 group-hover:bg-emerald-500/25">
+          <TrendArrow className="h-3 w-3 transition-transform duration-300 group-hover:-translate-y-0.5" />
           {kpi.trend.text}
         </span>
       </div>
-      <div className="mt-4 flex items-baseline gap-1">
-        <span className="text-[27px] font-bold leading-none tracking-tight text-ink-900">
+      <div className="relative mt-4 flex items-baseline gap-1">
+        <span className="origin-left text-[27px] font-bold leading-none tracking-tight text-ink-900 transition-transform duration-300 ease-out group-hover:scale-[1.07]">
           {counted}
         </span>
         {kpi.suffix && (
@@ -696,10 +775,10 @@ function KpiCard({
           </span>
         )}
       </div>
-      <div className="mt-2 truncate text-[13.5px] font-semibold text-ink-800">
+      <div className="relative mt-2 truncate text-[13.5px] font-semibold text-ink-800">
         {kpi.label}
       </div>
-      <div className="mt-0.5 truncate text-[12px] text-ink-500">
+      <div className="relative mt-0.5 truncate text-[12px] text-ink-500">
         {kpi.description}
       </div>
     </button>
