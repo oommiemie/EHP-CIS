@@ -1,0 +1,538 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Design Tokens ---------- */
+:root {
+  --gradient-canvas: radial-gradient(
+      1200px 800px at 8% 0%,
+      rgba(99, 142, 255, 0.06) 0%,
+      rgba(99, 142, 255, 0) 64%
+    ),
+    radial-gradient(
+      1000px 700px at 100% 10%,
+      rgba(167, 139, 250, 0.06) 0%,
+      rgba(167, 139, 250, 0) 64%
+    ),
+    radial-gradient(
+      900px 700px at 50% 100%,
+      rgba(56, 189, 248, 0.05) 0%,
+      rgba(56, 189, 248, 0) 64%
+    ),
+    linear-gradient(180deg, #fbfcff 0%, #fdfdff 100%);
+
+  --ring: 0 0 0 4px rgba(58, 100, 255, 0.18);
+  --hairline: 1px solid rgba(15, 23, 42, 0.06);
+  --hairline-strong: 1px solid rgba(15, 23, 42, 0.1);
+
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply font-sans text-ink-800 antialiased;
+  font-feature-settings: 'cv11', 'ss01';
+  background: var(--gradient-canvas);
+  background-attachment: fixed;
+}
+
+/* ---------- Reusable Layers ---------- */
+@layer components {
+  /* Liquid glass surface — solid white, 90% opacity */
+  .glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(28px) saturate(140%);
+    -webkit-backdrop-filter: blur(28px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 18px 44px -28px rgba(28, 38, 92, 0.16),
+      0 6px 18px -14px rgba(28, 38, 92, 0.09);
+  }
+
+  .glass-tight {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.6) inset,
+      0 6px 16px -14px rgba(28, 38, 92, 0.14);
+  }
+
+  /* Floating overlays (dropdown / modal) — near-opaque + heavy blur for readability */
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(48px) saturate(160%);
+    -webkit-backdrop-filter: blur(48px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 24px 64px -20px rgba(28, 38, 92, 0.32),
+      0 8px 24px -12px rgba(28, 38, 92, 0.18);
+  }
+
+  .glass-dim {
+    background: rgba(15, 23, 42, 0.04);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+  }
+
+  /* Apple-style liquid glass — real backdrop refraction via an SVG
+     displacement filter (#liquid-glass in index.html). Browsers without
+     backdrop-filter url() support gracefully fall back to a frosted blur. */
+  .liquid-glass {
+    -webkit-backdrop-filter: blur(18px) saturate(1.7);
+    backdrop-filter: blur(18px) saturate(1.7);
+    backdrop-filter: url(#liquid-glass) blur(18px) saturate(1.7);
+  }
+
+  /* button variant — strong refraction, minimal blur so the liquid-glass
+     distortion of the backdrop is clearly visible */
+  .liquid-glass-button {
+    -webkit-backdrop-filter: blur(2px) saturate(1.7);
+    backdrop-filter: blur(2px) saturate(1.7);
+    backdrop-filter: url(#liquid-glass-strong) blur(2px) saturate(1.7)
+      brightness(1.05);
+  }
+
+  /* Liquid-glass hover / focus highlight for menu items */
+  .glass-hover {
+    transition:
+      background-color 0.22s ease,
+      box-shadow 0.22s ease,
+      color 0.22s ease;
+  }
+  .glass-hover:hover,
+  .glass-hover:focus-visible {
+    outline: none;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      inset 0 0 0 1px rgba(15, 23, 42, 0.05),
+      0 8px 20px -12px rgba(28, 38, 92, 0.22);
+  }
+
+  /* Light glass surface — sidebar (soft lavender) */
+  .glass-sidebar {
+    background:
+      radial-gradient(
+        440px 220px at 25% 0%,
+        rgba(167, 139, 250, 0.3) 0%,
+        rgba(167, 139, 250, 0) 72%
+      ),
+      radial-gradient(
+        420px 260px at 90% 100%,
+        rgba(56, 189, 248, 0.2) 0%,
+        rgba(56, 189, 248, 0) 72%
+      ),
+      linear-gradient(180deg, #f4f1ff 0%, #ebe6fb 100%);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.75) inset,
+      0 24px 60px -24px rgba(28, 38, 92, 0.22);
+  }
+
+  /* Hairline divider with white inner glow (Apple-style) */
+  .hairline {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+
+  /* Soft brand gradient text */
+  .text-gradient {
+    background-image: linear-gradient(120deg, #3a64ff 0%, #8b5cf6 50%, #38bdf8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Pill chips */
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-pill px-3 py-1 text-xs font-medium;
+  }
+
+  /* Focus ring */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
+  }
+}
+
+/* ---------- Background Blobs ---------- */
+.blob {
+  position: absolute;
+  filter: blur(90px);
+  border-radius: 999px;
+  opacity: 0.1;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* ---------- Action Animations ---------- */
+@keyframes stagger-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ripple {
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Staggered entrance — applied to a container; direct children cascade in */
+.stagger-children > * {
+  opacity: 0;
+  animation: stagger-up 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.stagger-children > *:nth-child(1) {
+  animation-delay: 0.04s;
+}
+.stagger-children > *:nth-child(2) {
+  animation-delay: 0.09s;
+}
+.stagger-children > *:nth-child(3) {
+  animation-delay: 0.14s;
+}
+.stagger-children > *:nth-child(4) {
+  animation-delay: 0.19s;
+}
+.stagger-children > *:nth-child(5) {
+  animation-delay: 0.24s;
+}
+.stagger-children > *:nth-child(6) {
+  animation-delay: 0.29s;
+}
+.stagger-children > *:nth-child(7) {
+  animation-delay: 0.34s;
+}
+.stagger-children > *:nth-child(8) {
+  animation-delay: 0.39s;
+}
+.stagger-children > *:nth-child(9) {
+  animation-delay: 0.44s;
+}
+.stagger-children > *:nth-child(n + 10) {
+  animation-delay: 0.49s;
+}
+
+/* Click ripple — spawned inside Button */
+.ripple-layer {
+  position: absolute;
+  border-radius: 9999px;
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple 0.6s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-children > *,
+  .ripple-layer,
+  .animate-blob-drift,
+  .animate-fade-up,
+  .animate-pop-in,
+  .animate-page-in {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ---------- AI Assistant FAB ---------- */
+@keyframes ai-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes ai-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes ai-glow {
+  0%, 100% { opacity: 0.45; transform: scale(0.95); }
+  50% { opacity: 0.9; transform: scale(1.1); }
+}
+@keyframes ai-ring {
+  0% { transform: scale(0.7); opacity: 0; }
+  16% { opacity: 0.5; }
+  100% { transform: scale(2); opacity: 0; }
+}
+@keyframes ai-talk {
+  0% { transform: scale(1.06); }
+  30% { transform: scale(1.18); }
+  48% { transform: scale(1.08); }
+  66% { transform: scale(1.15); }
+  100% { transform: scale(1.06); }
+}
+@keyframes ai-wiggle {
+  0%, 100% { transform: rotate(0deg) scale(1.12); }
+  22% { transform: rotate(-13deg) scale(1.18); }
+  60% { transform: rotate(12deg) scale(1.14); }
+  84% { transform: rotate(-5deg) scale(1.13); }
+}
+@keyframes ai-bubble-in {
+  0% { opacity: 0; transform: translateY(10px) scale(0.9); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.animate-ai-float { animation: ai-float 4.5s ease-in-out infinite; }
+.animate-ai-glow { animation: ai-glow 3.6s ease-in-out infinite; }
+.animate-ai-spin-slow { animation: ai-spin 9s linear infinite; }
+.animate-ai-spin-fast { animation: ai-spin 2.4s linear infinite; }
+.animate-ai-ring { animation: ai-ring 3.6s ease-out infinite; }
+.animate-ai-ring-fast { animation: ai-ring 1.6s ease-out infinite; }
+.animate-ai-talk { animation: ai-talk 0.85s ease-in-out infinite; }
+.animate-ai-wiggle { animation: ai-wiggle 0.8s ease-in-out infinite; }
+.animate-ai-bubble-in {
+  animation: ai-bubble-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-ai-orbit { animation: ai-spin 8s linear infinite; }
+.animate-ai-twinkle { animation: ai-twinkle 3s ease-in-out infinite; }
+
+@keyframes ai-twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.animate-ai-wave { animation: ai-wave 0.5s ease-in-out infinite; }
+
+@keyframes ai-wave {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+/* ---------- Running border line ---------- */
+/* a glowing gradient streak that travels along the rounded border.
+   The element stays still — only the conic angle animates, so the
+   ring shape never spins. */
+@property --ai-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes ai-angle-spin {
+  to {
+    --ai-angle: 360deg;
+  }
+}
+.ai-border-beam {
+  background: conic-gradient(
+    from var(--ai-angle),
+    transparent 0deg 168deg,
+    #38bdf8 218deg,
+    #8b5cf6 280deg,
+    #f472b6 336deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: ai-angle-spin 2.8s linear infinite;
+}
+
+/* ---------- Send animations ---------- */
+/* paper-plane launches up-right, vanishes, a fresh one slides back in */
+@keyframes send-fly {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(11px, -11px) rotate(18deg);
+    opacity: 0;
+  }
+  41% {
+    transform: translate(-9px, 9px) rotate(0deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 1;
+  }
+}
+.animate-send-fly {
+  animation: send-fly 0.5s ease-in-out;
+}
+
+/* a sent message slides in from the right */
+@keyframes msg-send-in {
+  0% {
+    opacity: 0;
+    transform: translateX(16px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+.animate-msg-send-in {
+  animation: msg-send-in 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Cute hopping orb ---------- */
+/* squash-and-stretch jump — needs transform-origin: bottom */
+@keyframes ai-hop {
+  0%,
+  100% {
+    transform: translateY(0) scaleX(1) scaleY(1);
+  }
+  10% {
+    transform: translateY(1px) scaleX(1.12) scaleY(0.88);
+  }
+  32% {
+    transform: translateY(-15px) scaleX(0.92) scaleY(1.1);
+  }
+  50% {
+    transform: translateY(-17px) scaleX(1) scaleY(1);
+  }
+  68% {
+    transform: translateY(-15px) scaleX(0.95) scaleY(1.07);
+  }
+  85% {
+    transform: translateY(1px) scaleX(1.14) scaleY(0.86);
+  }
+  93% {
+    transform: translateY(0) scaleX(0.97) scaleY(1.03);
+  }
+}
+.animate-ai-hop {
+  animation: ai-hop 1.5s ease-in-out infinite;
+}
+
+/* ---------- Login backdrop drift (Ken Burns) ---------- */
+@keyframes login-drift {
+  0% {
+    transform: scale(1.1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.22) translate3d(-2.4%, -2%, 0);
+  }
+  100% {
+    transform: scale(1.1) translate3d(0, 0, 0);
+  }
+}
+.animate-login-drift {
+  animation: login-drift 28s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ---------- Sidebar nav ---------- */
+@keyframes nav-pop {
+  0% { transform: scale(0.92); opacity: 0.4; }
+  60% { transform: scale(1.035); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-nav-pop {
+  animation: nav-pop 0.34s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/* ---------- Toast / snackbar ---------- */
+@keyframes toast-in {
+  0% {
+    opacity: 0;
+    transform: translateX(118%) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+@keyframes toast-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(118%) scale(0.94);
+  }
+}
+@keyframes toast-ring {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 100;
+  }
+}
+.animate-toast-in {
+  animation: toast-in 0.5s cubic-bezier(0.22, 1.16, 0.4, 1) both;
+}
+.animate-toast-out {
+  animation: toast-out 0.32s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+/* ---------- Notification bell ---------- */
+@keyframes bell-swing {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  18% {
+    transform: rotate(17deg);
+  }
+  38% {
+    transform: rotate(-14deg);
+  }
+  58% {
+    transform: rotate(9deg);
+  }
+  78% {
+    transform: rotate(-5deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ai-float,
+  .animate-ai-glow,
+  .animate-ai-spin-slow,
+  .animate-ai-spin-fast,
+  .animate-ai-talk,
+  .animate-ai-wiggle,
+  .animate-ai-twinkle,
+  .animate-ai-wave,
+  .animate-ai-bubble-in,
+  .animate-nav-pop,
+  .ai-border-beam,
+  .animate-send-fly,
+  .animate-msg-send-in,
+  .animate-ai-hop,
+  .animate-toast-in,
+  .animate-toast-out,
+  .animate-login-drift {
+    animation: none !important;
+  }
+  .animate-ai-ring,
+  .animate-ai-ring-fast,
+  .animate-ai-orbit {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+}
+
+/* Hidden scrollbars — the gutter never takes width, so content never shifts.
+   Scrolling still works via wheel, trackpad and keyboard. */
+* {
+  scrollbar-width: none; /* Firefox */
+}
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Chrome, Safari, Edge */
+}
